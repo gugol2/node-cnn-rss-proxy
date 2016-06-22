@@ -98,10 +98,12 @@ app.use(function(req, res, next) {
     jwt.verify(token, app.get('secretKey'), {ignoreExpiration: true}, function(err, decoded) {      
       if (err) {
         err.status = 401;
+        //pass error to the next Error MW 
         next(err);  
       } else {
         //If everything is good, save to request for use in other routes
         req.decoded = decoded;
+        //pass error to the next Error MW 
         next();
       }
     });
@@ -110,6 +112,7 @@ app.use(function(req, res, next) {
     //If there is no token return an error
     var err = new Error("No token provided. Provide a token in the query(token) or in the headers(x-access-token)");
     err.status = 403;
+    //pass error to the next Error MW 
     next(err);    
   }
 });
@@ -131,6 +134,7 @@ app.use('/favicon.ico',function(req, res, next){
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
+    //pass error to the next Error MW 
     next(err);
 });
 

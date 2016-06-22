@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node ./init.js"
   },
-  "author" : "JSC",
+  "author": "JSC",
   "license": "ISC",
   "dependencies": {
     "body-parser": "~1.14.1",
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "mocha": "^2.5.3",
+    "should": "^9.0.2",
     "supertest": "^1.2.0"
   }
 }

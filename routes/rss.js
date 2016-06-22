@@ -12,14 +12,14 @@ var xml2js = require('xml2js');
 //GET /api
 router.get("/", function(req, res) {
 	res.json(
-		{ 
-			message: "All the routes in this route precise authentication",
-			usage: "Authentication uses token and can be pass: in the body, in the query or in the header as 'x-access-token'",
-			routes: { 
-				"Get json feed result" : "GET /rss/feed?url=feedUrl",
-				"Get a new token" : "GET rss/newtoken"
-			}
-		}  
+	{ 
+		message: "All the routes in this route precise authentication",
+		usage: "Authentication uses token and can be pass in the query or in the header as 'x-access-token'",
+		routes: { 
+			"Get json feed result" : "GET /rss/feed?url=feedUrl&token=token OR  GET /rss/feed?url=feedUrl (and the token in the header)",
+			"Get a new token" : "GET rss/newtoken?token=token OR  GET rss/newtoken (and the token in the header)"
+		}
+	}  
 	);
 });
 
@@ -83,16 +83,16 @@ router.use(function(req,res,next){
 router.get("/newtoken", function(req, res) {
 
   	// It we wanted to create another token
-    var token = jwt.sign(
-        {app:'angular-videopodcast', id:'125'}, 
-        router.get('secretKey')
-    );
+  	var token = jwt.sign(
+  		{app:'angular-videopodcast', id:'125'}, 
+  		router.get('secretKey')
+  		);
 
     // return the information including token as JSON
     res.json({
-        success: true,
-        token: token,
-        "expiration time":"none"
+    	success: true,
+    	token: token,
+    	"expiration time":"none"
     }); 
 });
 
@@ -108,77 +108,100 @@ router.get("/feed",function(req, res, next) {
 	var resultado;
 	var jsonResutl;
 
+	var callbackGetFeed=function(resFromFeed) {
+
+		if(resFromFeed.statusCode >= 200 && resFromFeed.statusCode < 400) {
+
+			resFromFeed.setEncoding('utf8');
+
+			console.log("status: -->"+resFromFeed.statusCode);
+
+			resFromFeed.on('data', function(XMLdata) { data += XMLdata.toString(); });
+			resFromFeed.on('end', function() {
+				//console.log('data', data);
+				parser.parseString(
+					data, 
+					callbackProcessXML						
+				);
+
+				//if xml2js parser error handle parser error 
+				parser.on('error', function(err) { 
+					console.log('xml2js parser error', err); 
+					//pass error to the next Error MW 
+					next(err);
+				});
+			});
+
+			//if resFromFeed error handle it
+			resFromFeed.on('error', function (err) {
+				console.log("Error when reading the XML feed response");
+				//pass error to the next Error MW 
+				next(err);
+			});
+
+		}else{
+			console.log("Error when calling the url parameter!!!" +resFromFeed.statusCode);
+			var err = new Error("Failed url: " +url);
+			err.status = resFromFeed.statusCode;
+			//pass error to the next Error MW 
+			next(err);
+				
+		}
+
+	}
+
+	//Process the XML result from the feed
+	var callbackProcessXML=function(err, result) {
+
+		//error parsing the reponse from the feed
+		if(err){
+			console.log('Error when parsing response from feed', err);
+			//pass error to the next Error MW 
+			next(err);
+
+		}else{
+			console.log('FINISHED', err, result);
+			//console.log(util.inspect(result, false, null));
+			//console.log('-------------');
+			jsonResutl= JSON.stringify(result.rss.channel);
+
+			//console.log(jsonResutl);
+			console.log("*******************************");
+
+			resultado=result.rss.channel;
+			
+			sendResultJSON(resultado);
+		}
+
+	}
+
+	//send the resutl passed in JSON
+	function sendResultJSON(result) {
+		res.json(result);				
+	}
+
+	//Check if the path contains the parameter url
 	if(req.query && req.query.url){
+
 		var url= 'http://'+req.query.url;
 
 		console.log("url is:" +url);
-	
-		var reqToFeed=http.get(url, function(resFromFeed) {
 
-			if(resFromFeed.statusCode >= 200 && resFromFeed.statusCode < 400) {
-
-				resFromFeed.setEncoding('utf8');
-
-				console.log("status: -->"+resFromFeed.statusCode);
-
-				resFromFeed.on('data', function(data_) { data += data_.toString(); });
-				resFromFeed.on('end', function() {
-					//console.log('data', data);
-					parser.parseString(data, function(err, result) {
-
-						//error parsing the reponse from the feed
-						if(err){
-							console.log('Error when parsing response from feed', err); 
-							next(err);
-
-						}else{
-							console.log('FINISHED', err, result);
-							//console.log(util.inspect(result, false, null));
-							//console.log('-------------');
-							jsonResutl= JSON.stringify(result.rss.channel);
-
-							//console.log(jsonResutl);
-							console.log("*******************************");
-
-							resultado=result.rss.channel;
-							res.json(resultado);
-						}
-						
-					});
-
-					//if parser error handle parser error 
-					parser.on('error', function(err) { 
-						console.log('Parser error', err); 
-						next(err);
-					});
-				});
-
-				//if resFromFeed error handle it
-				resFromFeed.on('error', function (err) {
-					console.log("Error when !!!" +err);
-					next(err);
-				});
-
-			}else{
-				console.log("Error when calling the url parameter!!!" +resFromFeed.statusCode);
-				var err = new Error("Failed url: " +url);
-				err.status = resFromFeed.statusCode;
-				next(err);
-				
-			}
-
-		});
+		var reqToFeed=http.get(url, callbackGetFeed);
 
 		reqToFeed.on('error', function (error) {
 			console.log("Error when !!!" +error);
+			//pass error to the next Error MW 
 			next(error);
 		});
 
 	}else{
 		var err = new Error("the query url param is missing or empty");
 		err.status = 400;
+		//pass error to the next Error MW 
 		next(err);
 	}
+
 	
 	console.log("U reached me!!!")	
 
