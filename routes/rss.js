@@ -126,6 +126,7 @@ router.get("/feed",function(req, res, next) {
 					//console.log('data', data);
 					parser.parseString(data, function(err, result) {
 
+						//error parsing the reponse from the feed
 						if(err){
 							console.log('Error when parsing response from feed', err); 
 							next(err);
@@ -175,7 +176,7 @@ router.get("/feed",function(req, res, next) {
 
 	}else{
 		var err = new Error("the query url param is missing or empty");
-		err.status = 409;
+		err.status = 400;
 		next(err);
 	}
 	

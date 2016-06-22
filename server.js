@@ -90,14 +90,15 @@ app.use('/', info);
 app.use(function(req, res, next) {
 
   //Check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  var token = req.query.token || req.headers['x-access-token'];
   //Decode token
   if (token) {
 
     //Verifies secret and checks expression (ignores if token expirates)
     jwt.verify(token, app.get('secretKey'), {ignoreExpiration: true}, function(err, decoded) {      
       if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+        err.status = 401;
+        next(err);  
       } else {
         //If everything is good, save to request for use in other routes
         req.decoded = decoded;
@@ -107,11 +108,9 @@ app.use(function(req, res, next) {
 
   } else {
     //If there is no token return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
-    });
-    
+    var err = new Error("No token provided. Provide a token in the query(token) or in the headers(x-access-token)");
+    err.status = 403;
+    next(err);    
   }
 });
 
