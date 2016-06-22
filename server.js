@@ -26,11 +26,13 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//Middleware to set conditions for all requests
 // Enable Cross Origin Resource Sharing
-app.get('*', function(req, res, next) {
-  	res.header("Access-Control-Allow-Origin", "*"); // It can be restricted to the required domain
-  	res.header('Access-Control-Allow-Methods', 'GET');
-  	res.header('Content-Type', 'application/json');
+app.all('*', function(req, res, next) {
+  res.set('X-Powered-By', 'Proxy CNN rss');
+  res.header("Access-Control-Allow-Origin", "*"); // It can be restricted to the required domain
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,x-access-token');
 	next();
 });
 
@@ -83,22 +85,6 @@ app.use('/', info);
 });*/
 
 
-app.get("/givemeatoken", function(req, res) {
-
-  // If user is found and password is right create a token
-              var token = jwt.sign(
-                {app:'angular-videopodcast', id:'125'}, 
-                app.get('secretKey')
-              );
-
-              // return the information including token as JSON
-              res.json({
-                success: true,
-                token: token,
-                "expiration time":"none"
-              }); 
-  
-});
 
 //Check authentication token
 app.use(function(req, res, next) {
