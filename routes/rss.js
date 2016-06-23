@@ -28,12 +28,12 @@ router.get("/", function(req, res) {
 
 
 //Autoload the userId from the authentication decoded token
-router.use(function(req,res,next){
+/*router.use(function(req,res,next){
 	//Gets the userId from the token to pass it to the next MW's of this api route
 	req.userId=req.decoded.id;
 	next();
 
-});
+});*/
 
 //Autoload a comment if the path contains the ":commentId(\\d+)" parameter
 //CommentId must be a number > 0
@@ -138,23 +138,22 @@ router.get("/feed",function(req, res, next) {
 				);
 
 				//if xml2js parser error handle parser error 
-				parser.on('error', function(err) { 
-					console.log('xml2js parser error', err); 
+				parser.on('error', function(error) { 
+					var err = new Error('xml2js parser error-->'+error);
 					//pass error to the next Error MW 
 					next(err);
 				});
 			});
 
 			//if resFromFeed error handle it
-			resFromFeed.on('error', function (err) {
-				console.log("Error when reading the XML feed response");
+			resFromFeed.on('error', function (error) {
+				var err = new Error("Error when reading the XML feed response-->"+error);
 				//pass error to the next Error MW 
 				next(err);
 			});
 
 		}else{
-			console.log("Error when calling the url parameter!!!" +resFromFeed.statusCode);
-			var err = new Error("Failed url: " +url);
+			var err = new Error("Requested url failed. Status: "+resFromFeed.statusCode);
 			err.status = resFromFeed.statusCode;
 			//pass error to the next Error MW 
 			next(err);
@@ -164,11 +163,11 @@ router.get("/feed",function(req, res, next) {
 	}
 
 	//Process the XML result from the feed
-	var callbackProcessXML=function(err, result) {
+	var callbackProcessXML=function(error, result) {
 
 		//error parsing the reponse from the feed
-		if(err){
-			console.log('Error when parsing response from feed', err);
+		if(error){
+			var err = new Error('Error when parsing response from feed-->'+error);
 			//pass error to the next Error MW 
 			next(err);
 
@@ -203,20 +202,18 @@ router.get("/feed",function(req, res, next) {
 		var reqToFeed=http.get(url, callbackGetFeed);
 
 		reqToFeed.on('error', function (error) {
-			console.log("Error when !!!" +error);
+			var err = new Error("Error when requesting the query url parameter:" +url+ "-->" +error);
 			//pass error to the next Error MW 
-			next(error);
+			next(err);
 		});
 
 	}else{
-		var err = new Error("the query url param is missing or empty");
+		var err = new Error("the query url parameter is missing or empty");
 		err.status = 400;
 		//pass error to the next Error MW 
 		next(err);
 	}
 
-	
-	console.log("U reached me!!!")	
 
 });
 

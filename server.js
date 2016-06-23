@@ -8,6 +8,7 @@ var config = require('./config'); // config file
 //var models = require('./models/models.js');
 //var bcrypt = require('bcrypt'); //To hash passwords and verify hashed passwords
 
+var customLogger = require("./customlogger");
 
 //Import routers
 var info = require('./routes/info');
@@ -16,11 +17,12 @@ var rss = require('./routes/rss');
 //Install express
 var app = express();
 
+//Install morgan in the app and use the customLogger as the stream option
+customLogger.debug("Overriding 'Express' logger");
+app.use(require('morgan')("combined", { "stream": customLogger.stream }));
+
 //set the secret key
 app.set('secretKey', config.secret);
-
-//Install morgan in the app
-app.use(morgan('dev'));
 
 //Install modules
 app.use(bodyParser.json());
@@ -40,7 +42,7 @@ app.all('*', function(req, res, next) {
 app.use('/favicon.ico',function(req, res, next){
   res.set({'Content-Type': 'image/x-icon'});
   res.status(200).end();
-  console.log('favicon requested');
+  customLogger.debug('favicon requested');
 });
 
 // Register routers
@@ -127,6 +129,7 @@ app.use(function(req, res, next) {
 //All of our user authenticated routes will be prefixed with /api
 app.use('/rss', rss);
 
+
 // Other paths triggers a 404 error and forward it to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -146,8 +149,7 @@ if (app.get('env') === 'development') {
         res.status(err.status || 500);
         //send the error, the status and the message of the error
         res.json({"error":[{"err":err, "status":res.statusCode, "message":err.message}]});
-        console.log(err);
-        console.log(res.statusCode);
+        customLogger.error(err, { status: res.statusCode });
     });
 }
 
@@ -157,7 +159,10 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     //send the error, the status and the message of the error
     res.json({"error":[{"status":res.statusCode, "message":err.message}]});
+    customLogger.error(err, { status: res.statusCode });
 });
+
+
 
 //export the express app
 module.exports = app;
