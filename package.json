@@ -2,7 +2,8 @@
   "name": "node-proxy",
   "main": "init.js",
   "scripts": {
-    "start": "node ./init.js"
+    "start": "node ./init.js",
+    "test": "mocha test"
   },
   "author": "JSC",
   "license": "ISC",
