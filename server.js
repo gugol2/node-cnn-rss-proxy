@@ -36,6 +36,12 @@ app.all('*', function(req, res, next) {
 	next();
 });
 
+//Short-Circuit favicon requests
+app.use('/favicon.ico',function(req, res, next){
+  res.set({'Content-Type': 'image/x-icon'});
+  res.status(200).end();
+  console.log('favicon requested');
+});
 
 // Register routers
 //To show info about the api (does not need authenctication)
@@ -120,15 +126,6 @@ app.use(function(req, res, next) {
 // Register routers
 //All of our user authenticated routes will be prefixed with /api
 app.use('/rss', rss);
-
-
-//Short-Circuit favicon requests
-app.use('/favicon.ico',function(req, res, next){
-	res.set({'Content-Type': 'image/x-icon'});
-	res.status(200).end();
-	console.log('favicon requested');
-});
-
 
 // Other paths triggers a 404 error and forward it to error handler
 app.use(function(req, res, next) {
