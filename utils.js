@@ -1,5 +1,11 @@
 //set NODE_ENV variable
-exports.setNodeEnv=function (value) {
+
+var utils={
+	setNodeEnv:setNodeEnv
+};
+
+function setNodeEnv(value) {
+
 	var nodeEnv;
 
     if (value === undefined) {
@@ -10,3 +16,5 @@ exports.setNodeEnv=function (value) {
 
     return nodeEnv;
 };
+
+module.exports=utils;

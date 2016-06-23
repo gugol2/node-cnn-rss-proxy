@@ -4,6 +4,9 @@ var router = express.Router();
 var util= require('util');
 var http = require('http');
 var xml2js = require('xml2js');
+var jwt    = require('jsonwebtoken'); //create, sign, and verify tokens
+
+var config = require('../config'); // config file
 
 
 //Install MW"s
@@ -79,21 +82,31 @@ router.use(function(req,res,next){
 
 });*/
 
-//To create a different token
+
+/*To create a different token from a passed query parameter (secret)
+or from the default secret if nothing passed*/
 router.get("/newtoken", function(req, res) {
 
-  	// It we wanted to create another token
-  	var token = jwt.sign(
-  		{app:'angular-videopodcast', id:'125'}, 
-  		router.get('secretKey')
-  		);
+	var newSecretKey;
 
-    // return the information including token as JSON
-    res.json({
-    	success: true,
-    	token: token,
-    	"expiration time":"none"
-    }); 
+	if(req.query && req.query.secret){
+		newSecretKey=req.query.secret;
+	}else{
+		newSecretKey=config.secret;
+	}
+
+	// It we wanted to create another token
+	var token = jwt.sign(
+	  	{app:'angular-videopodcast', id:'125'}, 
+	  	newSecretKey
+	);
+
+	// return the information including token as JSON
+	res.json({
+	    success: true,
+	    token: token,
+	    "expiration time":"none"
+	}); 
 });
 
 
