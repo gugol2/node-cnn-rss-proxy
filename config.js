@@ -3,7 +3,8 @@
 var configuration={
 	getSecret:getSecret,
 	getCustomLoggerDir: getCustomLoggerDir,
-	setNodeEnv:setNodeEnv
+	setNodeEnv:setNodeEnv,
+	getPort: getPort
 };
 
 var secret= 'whateverlongisagoodsecret';
@@ -12,6 +13,8 @@ var customLoggerDir= {
 	'info': './logs/info.log',
 	'error': './logs/error.log'
 };
+
+var port=3000;
 
 
 function getSecret() {
@@ -34,6 +37,10 @@ function setNodeEnv(value) {
     }
 
     return nodeEnv;
+};
+
+function getPort() {
+	return port;
 };
 
 

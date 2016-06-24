@@ -8,7 +8,7 @@ var app = require('./server')(config, customLoggerModule);
 //get the custom logger itself
 var customLogger= customLoggerModule.getCustomLogger();
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || config.getPort());
 
 //start server
 var server = app.listen(app.get('port'));
