@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = function (config) {
+function createCustomLogger(config) {
     var winston = require('winston');
     winston.emitErrs = true;
     //var config = require('../config'); // config file
@@ -58,6 +58,8 @@ module.exports = function (config) {
 
     return customLoggerModule;
 }
+
+module.exports = createCustomLogger;
 
 
 
