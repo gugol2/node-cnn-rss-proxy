@@ -1,29 +1,61 @@
+'use strict'
+
 var should= require('should');
+var config= require('../../config');
 
 describe('config data', function () {
 
-	var config= require('../../config');
-
-	it('should get the secret key', function () {
-		var secret= 'whateverlongisagoodsecret';
+	it('should get the secret key from the config file', function () {
 
 		var secretFromConfig=config.getSecret();
 
-		secret.should.equal(secret);
-	})
+		//not '', null, undefined, 0 , NaN, false
+		secretFromConfig.should.be.ok;
+	});
 
-	it('should get the custom logger directory paths', function () {
+
+	it('should get the custom logger directory paths from the config file', function () {
+		
 		var loggerDirectoryPaths=config.getCustomLoggerDir();
 
-		var customLoggerDir= {
-			'info': './logs/info.log',
-			'error': './logs/error.log'
-		};
 
 		loggerDirectoryPaths.should.have.properties('info', 'error');
 
-		loggerDirectoryPaths.should.eql(customLoggerDir);
-	})
+		//not '', null, undefined, 0 , NaN, false
+		loggerDirectoryPaths.should.be.ok;
+	});
+
+	it('should check the NODE_ENV variable', function () {
+
+		var value, nodeEnv;
+		
+		value= undefined;
+
+		nodeEnv=config.checkNodeEnv(value);
+
+		nodeEnv.should.startWith('set');
+		//not '', null, undefined, 0 , NaN, false
+		nodeEnv.should.be.ok;
+
+
+
+		value= !undefined;
+
+		nodeEnv=config.checkNodeEnv(value);
+		//not '', null, undefined, 0 , NaN, false
+		nodeEnv.should.be.ok;
+
+	});
+
+
+	it('should get the port of the app from the config file', function () {
+
+		var port=config.getPort();
+
+		//not '', null, undefined, 0 , NaN, false
+		port.should.be.ok;
+
+	});
 
 	
 	

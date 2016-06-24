@@ -15,7 +15,7 @@ var server = app.listen(app.get('port'));
 
 customLogger.info('Express server listening on port ' + server.address().port);
 
-customLogger.info('NODE_ENV is: ' + config.setNodeEnv(process.env.NODE_ENV) );
+customLogger.info('NODE_ENV is: ' + config.checkNodeEnv(process.env.NODE_ENV) );
 
 
 module.exports = server;

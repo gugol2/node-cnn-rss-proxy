@@ -3,7 +3,7 @@
 var configuration={
 	getSecret:getSecret,
 	getCustomLoggerDir: getCustomLoggerDir,
-	setNodeEnv:setNodeEnv,
+	checkNodeEnv:checkNodeEnv,
 	getPort: getPort
 };
 
@@ -25,8 +25,8 @@ function getCustomLoggerDir() {
 	return customLoggerDir;
 };
 
-//check NODE_ENV value
-function setNodeEnv(value) {
+//check the NODE_ENV variable
+function checkNodeEnv(value) {
 
 	var nodeEnv;
 
