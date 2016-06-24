@@ -175,7 +175,7 @@ module.exports = function (express, config, customLogger, jwt) {
 				next(err);
 
 			}else{
-				customLogger.debug('FINISHED', error, result);
+				//customLogger.debug('FINISHED', error, result);
 
 				//console.log(util.inspect(result, false, null));
 				//console.log('-------------');
@@ -189,7 +189,7 @@ module.exports = function (express, config, customLogger, jwt) {
 
 		}
 
-		//send the resutl passed in JSON
+		//send the resutl passed in as JSON
 		function sendResultJSON(result) {
 			res.json(result);				
 		}
