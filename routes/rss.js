@@ -92,7 +92,7 @@ router.get("/newtoken", function(req, res) {
 	if(req.query && req.query.secret){
 		newSecretKey=req.query.secret;
 	}else{
-		newSecretKey=config.secret;
+		newSecretKey=config.getSecret();
 	}
 
 	// It we wanted to create another token

@@ -8,7 +8,8 @@ var config = require('./config'); // config file
 //var models = require('./models/models.js');
 //var bcrypt = require('bcrypt'); //To hash passwords and verify hashed passwords
 
-var customLogger = require("./customlogger");
+var customLoggerModule= require("./utils/customlogger");
+var customLogger = customLoggerModule.getCustomLogger();
 
 //Import routers
 var info = require('./routes/info');
@@ -19,10 +20,10 @@ var app = express();
 
 //Install morgan in the app and use the customLogger as the stream option
 customLogger.debug("Overriding 'Express' logger");
-app.use(require('morgan')("combined", { "stream": customLogger.stream }));
+app.use(require('morgan')("combined", { "stream": customLoggerModule.stream }));
 
 //set the secret key
-app.set('secretKey', config.secret);
+app.set('secretKey', config.getSecret());
 
 //Install modules
 app.use(bodyParser.json());
