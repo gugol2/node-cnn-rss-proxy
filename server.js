@@ -20,6 +20,8 @@ var app = express();
 
 //Install morgan in the app and use the customLogger as the stream option
 customLogger.debug("Overriding 'Express' logger");
+//Standard Apache combined log output.
+//format login is--> :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"
 app.use(require('morgan')("combined", { "stream": customLoggerModule.stream }));
 
 //set the secret key

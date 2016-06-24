@@ -7,6 +7,8 @@ var xml2js = require('xml2js');
 var jwt    = require('jsonwebtoken'); //create, sign, and verify tokens
 
 var config = require('../config'); // config file
+var customLoggerModule= require("../utils/customlogger");
+var customLogger = customLoggerModule.getCustomLogger();
 
 
 //Install MW"s
@@ -125,13 +127,15 @@ router.get("/feed",function(req, res, next) {
 
 		if(resFromFeed.statusCode >= 200 && resFromFeed.statusCode < 400) {
 
+			//set encoding for the XML response
 			resFromFeed.setEncoding('utf8');
 
-			console.log("status: -->"+resFromFeed.statusCode);
-
-			resFromFeed.on('data', function(XMLdata) { data += XMLdata.toString(); });
+			resFromFeed.on('data', function(XMLdata) { 
+				// buffer the entire data response
+				data += XMLdata.toString(); 
+			});
 			resFromFeed.on('end', function() {
-				//console.log('data', data);
+				//when response ends sending, then we parse XML
 				parser.parseString(
 					data, 
 					callbackProcessXML						
@@ -172,13 +176,12 @@ router.get("/feed",function(req, res, next) {
 			next(err);
 
 		}else{
-			console.log('FINISHED', err, result);
+			customLogger.debug('FINISHED', error, result);
+
 			//console.log(util.inspect(result, false, null));
 			//console.log('-------------');
-			jsonResutl= JSON.stringify(result.rss.channel);
 
-			//console.log(jsonResutl);
-			console.log("*******************************");
+			jsonResutl= JSON.stringify(result.rss.channel);
 
 			resultado=result.rss.channel;
 			
@@ -197,7 +200,7 @@ router.get("/feed",function(req, res, next) {
 
 		var url= 'http://'+req.query.url;
 
-		console.log("url is:" +url);
+		customLogger.debug("url is:" +url);
 
 		var reqToFeed=http.get(url, callbackGetFeed);
 
