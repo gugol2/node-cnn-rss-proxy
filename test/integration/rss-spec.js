@@ -11,6 +11,7 @@ describe('rss routes', function () {
     server = require('../../init');
   });
 
+  //properly closing the server after each unit test
   afterEach(function (done) {
     server.close(done);
   });*/
@@ -20,8 +21,8 @@ describe('rss routes', function () {
     server = require('../../init');
   });
 
-  after(function (done) {
-    server.close(done);
+  after(function () {
+    server.close();
   });
 
 
