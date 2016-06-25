@@ -42,17 +42,16 @@ describe('info routes', function () {
   });
 
   // POST /
-  it('should respond to a POST request to a path that does not require any parameters nor token with status 403 and a message', function (done) {
+  it('should respond to a POST request to a path that does not require any parameters nor a token with status 404 and a message', function (done) {
     supertest(server)
       .post('/')
-      .expect(403)
+      .expect(404)
       .end(function (err, res) {
         if (err) return done(err);
         res.should.be.json;
-        res.status.should.equal(403);
+        res.status.should.equal(404);
         done();
       })
   });
-
   
 });

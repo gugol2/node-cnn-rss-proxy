@@ -7,7 +7,7 @@ module.exports = function (config, customLoggerModule) {
   var path = require('path');
   var bodyParser = require('body-parser');
   var morgan = require('morgan'); 
-  var jwt    = require('jsonwebtoken'); //create, sign, and verify tokens
+  
   //var models = require('./models/models.js');
   //var bcrypt = require('bcrypt'); //To hash passwords and verify hashed passwords
 
@@ -17,7 +17,7 @@ module.exports = function (config, customLoggerModule) {
   //Import routers
   var info = require('./routes/info')(express);
   //require rss passing it express, the config, the customLogger itself and the jwt
-  var rss = require('./routes/rss')(express, config, customLogger, jwt);
+  var rss = require('./routes/rss')(express, config, customLogger);
 
   //Install express
   var app = express();
@@ -29,7 +29,7 @@ module.exports = function (config, customLoggerModule) {
   app.use(require('morgan')("combined", { "stream": customLoggerModule.stream }));
 
   //set the secret key
-  app.set('secretKey', config.getSecret());
+  //app.set('secretKey', config.getSecret());
 
   //Install modules
   app.use(bodyParser.json());
@@ -101,36 +101,7 @@ module.exports = function (config, customLoggerModule) {
 
 
 
-  //Check authentication token
-  app.use(function(req, res, next) {
-
-    //Check header or url parameters or post parameters for token
-    var token = req.query.token || req.headers['x-access-token'];
-    //Decode token
-    if (token) {
-
-      //Verifies secret and checks expression (ignores if token expirates)
-      jwt.verify(token, app.get('secretKey'), {ignoreExpiration: true}, function(err, decoded) {      
-        if (err) {
-          err.status = 401;
-          //pass error to the next Error MW 
-          next(err);  
-        } else {
-          //If everything is good, save to request for use in other routes
-          req.decoded = decoded;
-          //pass error to the next Error MW 
-          next();
-        }
-      });
-
-    } else {
-      //If there is no token return an error
-      var err = new Error("No token provided. Provide a token in the query(token) or in the headers(x-access-token)");
-      err.status = 403;
-      //pass error to the next Error MW 
-      next(err);    
-    }
-  });
+  
 
   // Register routers
   //All of our user authenticated routes will be prefixed with /api

@@ -1,16 +1,49 @@
 'use strict'
 
 //export the router
-module.exports = function (express, config, customLogger, jwt) {
+module.exports = function (express, config, customLogger) {
 	//This is a router
 	var router = express.Router();
 	//allows deeper Objects console loging
 	var util= require('util');
 	var http = require('http');
 	var xml2js = require('xml2js');
+	var jwt    = require('jsonwebtoken'); //create, sign, and verify tokens
 
 
 	//Install MW"s
+
+
+	//Check authentication token
+	router.use(function(req, res, next) {
+
+	//Check header or url parameters or post parameters for token
+	var token = req.query.token || req.headers['x-access-token'];
+	//Decode token
+	if (token) {
+
+	    //Verifies secret and checks expression (ignores if token expirates)
+	    jwt.verify(token, config.getSecret(), {ignoreExpiration: true}, function(err, decoded) {      
+	        if (err) {
+	          err.status = 401;
+	          //pass error to the next Error MW 
+	          next(err);  
+	        } else {
+	          //If everything is good, save to request for use in other routes
+	          req.decoded = decoded;
+	          //pass error to the next Error MW 
+	          next();
+	        }
+	    });
+
+	    } else {
+	      //If there is no token return an error
+	      var err = new Error("No token provided. Provide a token in the query(token) or in the headers(x-access-token)");
+	      err.status = 403;
+	      //pass error to the next Error MW 
+	      next(err);    
+	    }
+	});
 
 	//Get info from the api
 	//GET /api
