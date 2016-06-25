@@ -43,7 +43,7 @@ describe('rss routes', function () {
       .expect(200)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(200);
         done();
       })
@@ -56,7 +56,7 @@ describe('rss routes', function () {
       .expect(403)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(403);
         done();
       })
@@ -70,7 +70,7 @@ describe('rss routes', function () {
       .expect(404)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(404);
         done();
       })
@@ -86,7 +86,7 @@ describe('rss routes', function () {
       .expect(200)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(200);
         done();
       })
@@ -99,7 +99,7 @@ describe('rss routes', function () {
       .expect(400)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(400);
         done();
       })
@@ -112,7 +112,7 @@ describe('rss routes', function () {
       .expect(500)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(500);
         done();
       })
@@ -125,7 +125,7 @@ describe('rss routes', function () {
       .expect(404)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(404);
         done();
       })
@@ -141,7 +141,7 @@ describe('rss routes', function () {
       .expect(401)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(401);
         done();
       })
@@ -154,7 +154,7 @@ describe('rss routes', function () {
       .expect(401)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(401);
         done();
       })
@@ -167,7 +167,7 @@ describe('rss routes', function () {
       .expect(401)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(401);
         done();
       })
@@ -180,7 +180,7 @@ describe('rss routes', function () {
       .expect(401)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(401);
         done();
       })
@@ -195,7 +195,7 @@ describe('rss routes', function () {
       .expect(403)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(403);
         done();
       })
@@ -208,7 +208,7 @@ describe('rss routes', function () {
       .expect(403)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(403);
         done();
       })
@@ -221,7 +221,7 @@ describe('rss routes', function () {
       .expect(403)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(403);
         done();
       })
@@ -234,13 +234,28 @@ describe('rss routes', function () {
       .expect(403)
       .end(function (err, res) {
         if (err) return done(err);
-        res.should.be.json;
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
         res.status.should.equal(403);
         done();
       })
   });
 
   /*----------------------------------------*/
+
+
+  // POST /rss
+  //token provided but http.METHOD not allowed
+  it('should respond to a not allowed http.METHOD to a non authenticated path that requires the url parameter and the token with status 404 and a message', function (done) {
+    supertest(server)
+      .post('/rss/feed')
+      .expect(404)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(404);
+        done();
+      })
+  });
 
 
 

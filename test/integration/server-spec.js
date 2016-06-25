@@ -1,7 +1,7 @@
 var should= require('should');
 var supertest = require('supertest');
 
-describe('info routes', function () {
+describe('server routes', function () {
   var server;
 
   //Clean server for each test (it can produce memory leaks)
@@ -10,7 +10,7 @@ describe('info routes', function () {
     delete require.cache[require.resolve('../../init')];
     server = require('../../init');
   });
-  
+
   //properly closing the server after each unit test
   afterEach(function (done) {
     server.close(done);
@@ -26,25 +26,26 @@ describe('info routes', function () {
   });
 
 
-  //None of the routes in this route precise authentication
+  //server main routes
   
-  // GET /
-  it('should respond to a path that does not require any parameters nor token with status 200 and a message', function (done) {
+  // GET /favicon.ico
+  it('should respond to the favicon.ico GET request with status 200', function (done) {
     supertest(server)
-      .get('/')
+      .get('/favicon.ico')
       .expect(200)
       .end(function (err, res) {
         if (err) return done(err);
-        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.headers.should.have.property('content-type', 'image/x-icon');
         res.status.should.equal(200);
         done();
       })
   });
 
-  // POST /
-  it('should respond to a POST request to a path that does not require any parameters nor a token with status 404 and a message', function (done) {
+
+  // POST /favicon.ico
+  it('should respond to the favicon.ico POST request with status 404', function (done) {
     supertest(server)
-      .post('/')
+      .post('/favicon.ico')
       .expect(404)
       .end(function (err, res) {
         if (err) return done(err);
@@ -53,5 +54,20 @@ describe('info routes', function () {
         done();
       })
   });
-  
+
+
+  // GET /foo/bar
+  it('should respond to non-existing route request with status 404', function (done) {
+    supertest(server)
+      .get('/foo/bar')
+      .expect(404)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(404);
+        done();
+      })
+  });
+
+
 });

@@ -5,7 +5,7 @@ module.exports = function (config, customLoggerModule) {
   //Import dependencies
   var express = require('express');
   var path = require('path');
-  var bodyParser = require('body-parser');
+  //var bodyParser = require('body-parser');
   var morgan = require('morgan'); 
   
   //var models = require('./models/models.js');
@@ -32,8 +32,8 @@ module.exports = function (config, customLoggerModule) {
   //app.set('secretKey', config.getSecret());
 
   //Install modules
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
+  /*app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));*/
 
   //Middleware to set conditions for all requests
   // Enable Cross Origin Resource Sharing
@@ -41,12 +41,12 @@ module.exports = function (config, customLoggerModule) {
     res.set('X-Powered-By', 'Proxy CNN rss');
     res.header("Access-Control-Allow-Origin", "*"); // It can be restricted to the required domain
     res.header('Access-Control-Allow-Methods', 'GET');
-    res.header('Access-Control-Allow-Headers', 'Content-type,Accept,x-access-token');
+    res.header('Access-Control-Allow-Headers', 'x-access-token');
     next();
   });
 
   //Short-Circuit favicon requests
-  app.use('/favicon.ico',function(req, res, next){
+  app.get('/favicon.ico',function(req, res, next){
     res.set({'Content-Type': 'image/x-icon'});
     res.status(200).end();
     customLogger.debug('favicon requested');

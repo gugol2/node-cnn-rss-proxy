@@ -15,7 +15,7 @@ module.exports = function (express, config, customLogger) {
 
 
 	//Check authentication token
-	router.use(function(req, res, next) {
+	router.get("*", function(req, res, next) {
 
 	//Check header or url parameters or post parameters for token
 	var token = req.query.token || req.headers['x-access-token'];
@@ -31,6 +31,7 @@ module.exports = function (express, config, customLogger) {
 	        } else {
 	          //If everything is good, save to request for use in other routes
 	          req.decoded = decoded;
+	          customLogger.info(decoded);
 	          //pass error to the next Error MW 
 	          next();
 	        }
