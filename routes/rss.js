@@ -190,7 +190,7 @@ module.exports = function (express, config, customLogger) {
 				});
 
 			}else{
-				var err = new Error("Requested url failed. Status: "+resFromFeed.statusCode);
+				var err = new Error("Requested url failed");
 				err.status = resFromFeed.statusCode;
 				//pass error to the next Error MW 
 				next(err);
@@ -225,13 +225,13 @@ module.exports = function (express, config, customLogger) {
 
 		//send the resutl passed in as JSON
 		function sendResultJSON(result) {
-			res.json(result);				
+			res.json({responseData: result, responseStatus: res.statusCode});				
 		}
 
 		//Check if the path contains the parameter url
 		if(req.query && req.query.url){
 
-			var url= 'http://'+req.query.url;
+			var url= req.query.url;
 
 			customLogger.debug("url is:" +url);
 

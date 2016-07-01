@@ -126,7 +126,8 @@ module.exports = function (config, customLoggerModule) {
         //If the error has no status, the status of the error will be 500
           res.status(err.status || 500);
           //send the error, the status and the message of the error
-          res.json({"error":[{"err":err, "status":res.statusCode, "message":err.message}]});
+          //res.json({"error":[{"err":err, "status":res.statusCode, "message":err.message}]});
+          res.json({responseData: err.message, responseStatus: res.statusCode, "error":err}); 
           customLogger.error(err, { status: res.statusCode });
       });
   }
@@ -136,7 +137,8 @@ module.exports = function (config, customLoggerModule) {
   app.use(function(err, req, res, next) {
       res.status(err.status || 500);
       //send the error, the status and the message of the error
-      res.json({"error":[{"status":res.statusCode, "message":err.message}]});
+      //res.json({"error":[{"status":res.statusCode, "message":err.message}]});
+      res.json({responseData: err.message, responseStatus: res.statusCode}); 
       customLogger.error(err, { status: res.statusCode });
   });
   return app;
