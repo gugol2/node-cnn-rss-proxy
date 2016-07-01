@@ -4,7 +4,8 @@ var configuration={
 	getSecret:getSecret,
 	getCustomLoggerDir: getCustomLoggerDir,
 	checkNodeEnv:checkNodeEnv,
-	getPort: getPort
+	getPort: getPort,
+	allowedApp:allowedApp
 };
 
 var secret= 'whateverlongisagoodsecret';
@@ -15,6 +16,8 @@ var customLoggerDir= {
 };
 
 var port=3001;
+
+var allowedApps=['anvideopodcastcnn001'];
 
 
 function getSecret() {
@@ -42,6 +45,20 @@ function checkNodeEnv(value) {
 function getPort() {
 	return port;
 };
+
+function getSecret() {
+	return secret;
+};
+
+function allowedApp(value) {
+	var index= allowedApps.indexOf(value);
+	if(index>-1){
+		return true;
+	}else{
+		return false;
+	}
+};
+
 
 
 module.exports=configuration;

@@ -57,6 +57,27 @@ describe('config data', function () {
 
 	});
 
+
+	it('should return true if the value passed is in the allowedApps array', function () {
+
+		var validAppId='anvideopodcastcnn001';
+
+		var boolean= config.allowedApp(validAppId);
+
+		boolean.should.be.true;
+		
+	});
+
+	it('should return false if the value passed is NOT in the allowedApps array', function () {
+
+		var invalidAppId='anvideopodcastcnn002';
+
+		var boolean= config.allowedApp(invalidAppId);
+
+		boolean.should.be.false;
+		
+	});
+
 	
 	
 });

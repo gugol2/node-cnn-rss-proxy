@@ -30,7 +30,7 @@ module.exports = function (express, config, customLogger) {
 	          next(err);  
 	        } else {
 	          customLogger.verbose(decoded);
-	          if(decoded.app==='angular-videopodcast' && decoded.id==='125'){
+	          if(config.allowedApp(decoded.appId)){
 	          	next();
 	          }else{
 	          	var err = new Error("The token does not have the right information");
@@ -52,26 +52,28 @@ module.exports = function (express, config, customLogger) {
 	});
 
 	//Get info from the api
-	//GET /api
+	//GET /rss
 	router.get("/", function(req, res) {
 		res.json(
 		{ 
 			message: "All the routes in this route precise authentication",
-			usage: "Authentication uses token and can be pass in the query or in the header as 'x-access-token'",
+			usage: "Authentication uses token and can be pass in the query as 'token' or in the header as 'x-access-token'",
 			routes: { 
 				"Get json feed result" : "GET /rss/feed?url=feedUrl&token=token OR  GET /rss/feed?url=feedUrl (and the token in the header)",
-				"Get a new token" : "GET rss/newtoken?token=token OR  GET rss/newtoken (and the token in the header)"
+				"Get a new token" : "GET rss/newtoken?token=token&[secret=secret]&appid=appid OR  GET rss/newtoken?[secret=secret]&appid=appid (and the token in the header)"
 			}
 		}  
 		);
 	});
 
 
-	/*To create a different token from a passed query parameter (secret)
-	or from the default secret if nothing passed*/
-	router.get("/newtoken", function(req, res) {
+	/*To create a different token from an optional parameter 'secret'
+	or from the default secret if nothing passed
+	and from a mandatory 'appid' parameter*/
+	router.get("/newtoken", function(req, res, next) {
 
 		var newSecretKey;
+		var appId;
 
 		if(req.query && req.query.secret){
 			newSecretKey=req.query.secret;
@@ -79,18 +81,28 @@ module.exports = function (express, config, customLogger) {
 			newSecretKey=config.getSecret();
 		}
 
-		// It we wanted to create another token
-		var token = jwt.sign(
-		  	{app:'angular-videopodcast', id:'125'}, 
-		  	newSecretKey
-		);
+		if(req.query && req.query.appid){
+			appId=req.query.appid;
+			// It we wanted to create another token
+			var token = jwt.sign(
+			  	{appId:appId}, 
+			  	newSecretKey
+			);
 
-		// return the information including token as JSON
-		res.json({
-		    success: true,
-		    token: token,
-		    "expiration time":"none"
-		}); 
+			// return the information including token as JSON
+			res.json({
+			    success: true,
+			    token: token,
+			    "expiration time":"none"
+			}); 
+
+		}else{
+			var err = new Error("the query appId parameter is missing or empty");
+			err.status = 400;
+			//pass error to the next Error MW 
+			next(err);
+		}
+		
 	});
 
 

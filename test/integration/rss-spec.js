@@ -4,11 +4,11 @@ var supertest = require('supertest');
 describe('rss routes', function () {
   var server;
 
-  var validToken='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHAiOiJhbmd1bGFyLXZpZGVvcG9kY2FzdCIsImlkIjoiMTI1IiwiaWF0IjoxNDY2NTMwMTM1fQ.ChOtnTIc828YQFgZCc25z1wOI7FavilFae2gRTSSWnw';
+  var validToken='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6ImFudmlkZW9wb2RjYXN0Y25uMDAxIiwiaWF0IjoxNDY3Mzc1MjQyfQ.SY-Ox_xZS7kHRVRxg4Et8vEqoGqLkK53t9f4mVcacBY';
   var invalidToken='xx';
-  var validUrl='rss.cnn.com/services/podcasting/studentnews/rss';
-  var invalidUrl='cnn.com';
-  var notFoundUrl='rss.cnn.com/services/podcasting/studentnews/rss/404';
+  var validUrl='http://rss.cnn.com/services/podcasting/studentnews/rss';
+  var invalidUrl='http://cnn.com';
+  var notFoundUrl='http://rss.cnn.com/services/podcasting/studentnews/rss/404';
 
   //Clean server for each test (it can produce memory leaks)
   /*beforeEach(function () {
@@ -80,7 +80,7 @@ describe('rss routes', function () {
   // GET /rss/...
 
   //token & url provided
-  it('should respond to an authenticated path with a required valid url parameter with status 200 and a message', function (done) {
+  it('should respond to an authenticated path with a required valid url parameter with status 200 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?url='+validUrl+'&token='+validToken)
       .expect(200)
@@ -92,8 +92,21 @@ describe('rss routes', function () {
       })
   });
 
+  it('should respond to an authenticated path with a required valid url parameter with status 200 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed?url='+validUrl)
+      .set('x-access-token', validToken)
+      .expect(200)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(200);
+        done();
+      })
+  });
+
   //token & !url provided
-  it('should respond to an authenticated path without the required url parameter with status 400 and a message', function (done) {
+  it('should respond to an authenticated path without the required url parameter with status 400 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?token='+validToken)
       .expect(400)
@@ -105,8 +118,21 @@ describe('rss routes', function () {
       })
   });
 
+  it('should respond to an authenticated path without the required url parameter with status 400 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed')
+      .set('x-access-token', validToken)
+      .expect(400)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(400);
+        done();
+      })
+  });
+
   //token & invalid response url provided
-  it('should respond to an authenticated path with a required invalid response url parameter with status 500 and a message', function (done) {
+  it('should respond to an authenticated path with a required invalid response url parameter with status 500 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?url='+invalidUrl+'&token='+validToken)
       .expect(500)
@@ -118,10 +144,36 @@ describe('rss routes', function () {
       })
   });
 
+  it('should respond to an authenticated path with a required invalid response url parameter with status 500 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed?url='+invalidUrl)
+      .set('x-access-token', validToken)
+      .expect(500)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(500);
+        done();
+      })
+  });
+
   //token & not found url provided
-  it('should respond to an authenticated path with a required valid url parameter not found with status 404 and a message', function (done) {
+  it('should respond to an authenticated path with a required valid url parameter not found with status 404 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?url='+notFoundUrl+'&token='+validToken)
+      .expect(404)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(404);
+        done();
+      })
+  });
+
+  it('should respond to an authenticated path with a required valid url parameter not found with status 404 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed?url='+notFoundUrl)
+      .set('x-access-token', validToken)
       .expect(404)
       .end(function (err, res) {
         if (err) return done(err);
@@ -135,7 +187,7 @@ describe('rss routes', function () {
   /*------------------------*/
 
   //invalid token & url provided
-  it('should respond to an authenticated path with an invalid token and a required valid url parameter with status 401 and a message', function (done) {
+  it('should respond to an authenticated path with an invalid token and a required valid url parameter with status 401 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?url='+validUrl+'&token='+invalidToken)
       .expect(401)
@@ -147,8 +199,21 @@ describe('rss routes', function () {
       })
   });
 
+  it('should respond to an authenticated path with an invalid token and a required valid url parameter with status 401 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed?url='+validUrl)
+      .set('x-access-token', invalidToken)
+      .expect(401)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(401);
+        done();
+      })
+  });
+
   //invalid token & !url provided
-  it('should respond to an authenticated path with an invalid token and a required valid url parameter with status 401 and a message', function (done) {
+  it('should respond to an authenticated path with an invalid token and a required valid url parameter with status 401 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?token='+invalidToken)
       .expect(401)
@@ -160,8 +225,21 @@ describe('rss routes', function () {
       })
   });
 
+  it('should respond to an authenticated path with an invalid token and a required valid url parameter with status 401 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed')
+      .set('x-access-token', invalidToken)
+      .expect(401)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(401);
+        done();
+      })
+  });
+
   //invalid token & invalid response url provided
-  it('should respond to an authenticated path with an invalid token and an required invalid response url parameter with status 401 and a message', function (done) {
+  it('should respond to an authenticated path with an invalid token and an required invalid response url parameter with status 401 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?url='+invalidUrl+'&token='+invalidToken)
       .expect(401)
@@ -173,10 +251,36 @@ describe('rss routes', function () {
       })
   });
 
+  it('should respond to an authenticated path with an invalid token and an required invalid response url parameter with status 401 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed?url='+invalidUrl)
+      .set('x-access-token', invalidToken)
+      .expect(401)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(401);
+        done();
+      })
+  });
+
   //invalid token & not found url provided
-  it('should respond to an authenticated path with a required valid url parameter not found with status 401 and a message', function (done) {
+  it('should respond to an authenticated path with a required valid url parameter not found with status 401 and a message token in query', function (done) {
     supertest(server)
       .get('/rss/feed?url='+notFoundUrl+'&token='+invalidToken)
+      .expect(401)
+      .end(function (err, res) {
+        if (err) return done(err);
+        res.headers.should.have.property('content-type', 'application/json; charset=utf-8');
+        res.status.should.equal(401);
+        done();
+      })
+  });
+
+  it('should respond to an authenticated path with a required valid url parameter not found with status 401 and a message token in header', function (done) {
+    supertest(server)
+      .get('/rss/feed?url='+notFoundUrl)
+      .set('x-access-token', invalidToken)
       .expect(401)
       .end(function (err, res) {
         if (err) return done(err);
