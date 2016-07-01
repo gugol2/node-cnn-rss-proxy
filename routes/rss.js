@@ -29,11 +29,16 @@ module.exports = function (express, config, customLogger) {
 	          //pass error to the next Error MW 
 	          next(err);  
 	        } else {
-	          //If everything is good, save to request for use in other routes
-	          req.decoded = decoded;
-	          customLogger.info(decoded);
-	          //pass error to the next Error MW 
-	          next();
+	          customLogger.verbose(decoded);
+	          if(decoded.app==='angular-videopodcast' && decoded.id==='125'){
+	          	next();
+	          }else{
+	          	var err = new Error("The token does not have the right information");
+	          	//pass error to the next Error MW 
+	          	next(err); 
+	          }
+	          
+	          
 	        }
 	    });
 
@@ -60,62 +65,6 @@ module.exports = function (express, config, customLogger) {
 		}  
 		);
 	});
-
-
-	//Autoload the userId from the authentication decoded token
-	/*router.use(function(req,res,next){
-		//Gets the userId from the token to pass it to the next MW's of this api route
-		req.userId=req.decoded.id;
-		next();
-
-	});*/
-
-	//Autoload a comment if the path contains the ":commentId(\\d+)" parameter
-	//CommentId must be a number > 0
-	/*router.param("commentId",function(req,res,next,commentId){
-		
-		//Find the comment by id or if not it returns null
-		models.Comment.find({where:{id:Number(commentId)}}).then(
-			function(comment){
-				console.info(comment);
-				if(comment){
-					req.comment=comment;
-					next();
-				}else{
-					var err=new Error('Comment does not exist in DB, commentId: ' +commentId);
-					err.status = 404;
-					next(err);
-				}
-			}
-		).catch(function(error){
-			next(error);
-		})
-	});*/
-
-
-	//Get all comments
-	//GET /api/comments
-	/*router.get("/comments", function(req, res, next) {
-		//Receives req.userId from the autoload
-		
-		//Fecht all comments from DB
-		models.Comment.findAll().then(function(comments){
-
-			//comments is an array of "Comment" instances
-			//res.json({"comments":comments});
-			if(comments.length>0){
-				res.json({"comments":comments});
-			}else{
-				var err=new Error("There are not any comments in the DB");
-				err.status = 404;
-				next(err);
-			}
-		//If error catch it and pass it to the error MW	
-		}).catch(function(error){
-			next(error);
-		});
-
-	});*/
 
 
 	/*To create a different token from a passed query parameter (secret)
@@ -145,8 +94,8 @@ module.exports = function (express, config, customLogger) {
 	});
 
 
-	//Get one comment by Id
-	//GET /api/comments/:commentId(\\d+)
+	//Get url feed data
+	//GET /feed?url=httpurl
 	router.get("/feed",function(req, res, next) {
 
 		var parser = new xml2js.Parser();
@@ -254,53 +203,6 @@ module.exports = function (express, config, customLogger) {
 	});
 
 
-
-
-	/*//Get all favorite comments for an user
-	//GET /api/comments/favorites
-	router.get("/comments/favorites", function(req, res, next) {
-		//Receives req.userId from the autoload
-
-		//Find the favorites of the :userId
-		var userid=req.userId;
-
-		models.Favorite.findAll({
-			attributes: ['CommentId'],
-			where:{
-				UserId: userid
-			}
-		}).then(function(favorites){
-			console.log("number of favorites:" +favorites.length);
-			//If :userId has any favorite save their CommentId's in an array
-			if(favorites && favorites.length>0){
-				var commentids= [];
-				for (favorite in favorites){
-					commentids.push(favorites[favorite].CommentId);
-				}
-				console.info(commentids);
-
-				//Find the comments by their id's
-				models.Comment.findAll({
-					where:{
-						Id: {
-							$in:commentids
-						}
-					}
-				}).then(function(favoritecomments){
-					//Send result of the creation
-					res.json({"favorite comments":favoritecomments});
-				}).catch(function(error){
-					next(error);
-				});
-			//If :userId has no favorite
-			}else{
-				var err = new Error('User with userId '+userid+" does not have any favorite comments");
-				err.status = 404;
-				next(err);
-			}
-		console.info(favorites);
-		});
-	});*/
 	return router;
 }
 

@@ -3,7 +3,6 @@
 function createCustomLogger(config) {
     var winston = require('winston');
     winston.emitErrs = true;
-    //var config = require('../config'); // config file
 
     var customLoggerModule={
         getCustomLogger:getCustomLogger,
