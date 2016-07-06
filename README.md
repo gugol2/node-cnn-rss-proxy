@@ -28,6 +28,7 @@ It has the following routes:
 ### Live Demo ###
 
 * [https://node-cnn-rss-proxy.herokuapp.com/](https://node-cnn-rss-proxy.herokuapp.com/)
-* token:
-	* 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6ImFudmlkZW9wb2RjYXN0Y25uMDAxIiwiaWF0IjoxNDY3Mzc1MjQyfQ.SY-Ox_xZS7kHRVRxg4Et8vEqoGqLkK53t9f4mVcacBY'
+* token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcHBJZCI6ImFudmlkZW9wb2RjYXN0Y25uMDAxIiwiaWF0IjoxNDY3Mzc1MjQyfQ.SY-Ox_xZS7kHRVRxg4Et8vEqoGqLkK53t9f4mVcacBY'
+* appid: 'anvideopodcastcnn001'
+
 
