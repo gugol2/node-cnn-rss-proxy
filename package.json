@@ -8,7 +8,6 @@
   "author": "JSC",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "~1.14.1",
     "express": "~4.13.3",
     "jsonwebtoken": "~5.4.1",
     "morgan": "^1.7.0",
